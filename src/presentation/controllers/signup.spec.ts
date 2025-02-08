@@ -6,13 +6,13 @@ describe("SignUp Controller", () => {
     const sut = new SignUpController();
 
     const request = new HttpRequest({
-      name: "any_name",
-      image: "email@test.com",
+      email: "email@test.com",
       password: "any_password",
       passwordConfirmation: "any_password",
     });
 
     const response = sut.handleRequest(request);
     expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual(new Error("Missing param: name"));
   });
 });
