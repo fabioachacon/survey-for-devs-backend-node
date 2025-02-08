@@ -1,6 +1,6 @@
 export class HttpRequest<T = Record<string, any>, H = Record<string, any>> {
-  private readonly body: T;
-  private readonly headers: H;
+  public body: T;
+  public headers: H;
 
   constructor(body: T) {
     this.body = body;
