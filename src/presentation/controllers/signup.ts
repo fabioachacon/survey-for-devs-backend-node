@@ -5,7 +5,10 @@ export class SignUpController {
   public handleRequest(request: HttpRequest): HttpResponse {
     const response = new HttpResponse();
 
-    response.statusCode = 400;
+    if (!request.getBody()?.name) {
+      response.body = new Error("Missing param: name");
+      response.statusCode = 400;
+    }
 
     return response;
   }
