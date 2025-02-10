@@ -1,9 +1,10 @@
-export class HttpRequest<T = Record<string, any>, H = Record<string, any>> {
-  public body: T;
-  public headers: H;
+export class HttpRequest<B = Record<string, any>, H = Record<string, any>> {
+  private body: B;
+  private headers: H;
 
-  constructor(body: T) {
-    this.body = body;
+  public payload<T extends B>(body: T) {
+    this.body = body as T;
+    return this;
   }
 
   public getBody() {

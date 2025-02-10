@@ -1,9 +1,32 @@
 export class HttpResponse {
-  public body: object | unknown;
-  public statusCode: number;
+  private headers: object | unknown;
+  private body: object | unknown;
+  private code: number;
 
-  constructor(params?: { body?: unknown; statusCode?: number }) {
-    this.body = params?.body;
-    this.statusCode = params?.statusCode;
+  public payload(body: any) {
+    this.body = body;
+    return this;
+  }
+
+  public statusCode(code: number) {
+    this.code = code;
+    return this;
+  }
+
+  public setHeaders(header: object) {
+    this.headers = header;
+    return this;
+  }
+
+  public getStatusCode() {
+    return this.code;
+  }
+
+  public getBody() {
+    return this.body;
+  }
+
+  public getHeaders() {
+    return this.headers;
   }
 }
