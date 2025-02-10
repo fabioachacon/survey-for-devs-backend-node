@@ -7,7 +7,6 @@ import { MissingParamError } from "./http/errors/MissingParamError";
 export class SignUpController {
   public handleRequest(request: HttpRequest): HttpResponse {
     const requestBody = request.getBody();
-
     const missingField = this.validateRequiredFeilds(requestBody);
 
     if (missingField) {
