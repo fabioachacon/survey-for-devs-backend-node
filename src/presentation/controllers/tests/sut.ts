@@ -6,7 +6,7 @@ export const getSut = () => {
 
   const request = new HttpRequest().payload<object>({
     name: "any_name",
-    image: "email@test.com",
+    email: "email@test.com",
     password: "any_password",
     passwordConfirmation: "any_password",
   });
