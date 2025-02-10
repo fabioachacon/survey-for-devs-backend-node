@@ -8,15 +8,22 @@ export class SignUpController {
   public handleRequest(request: HttpRequest): HttpResponse {
     const requestBody = request.getBody();
 
-    if (!requestBody?.name) {
+    const missingField = this.validateRequiredFeilds(requestBody);
+
+    if (missingField) {
       return new HttpResponse()
         .statusCode(StatusCodes.BAD_REQUEST)
-        .payload(new MissingParamError("name"));
+        .payload(new MissingParamError(missingField));
     }
-    if (!requestBody?.email) {
-      return new HttpResponse()
-        .statusCode(StatusCodes.BAD_REQUEST)
-        .payload(new MissingParamError("email"));
+  }
+
+  private validateRequiredFeilds(body: object): string | undefined {
+    const fields = ["name", "email", "password", "passwordConfirmation"];
+
+    for (const field of fields) {
+      if (!body[field]) {
+        return field;
+      }
     }
   }
 }
