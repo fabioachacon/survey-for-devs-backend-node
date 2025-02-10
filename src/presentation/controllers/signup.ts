@@ -1,10 +1,10 @@
-import { injectable } from "tsyringe";
-import { HttpRequest } from "./http/HttpRequest";
-import { HttpResponse } from "./http/HttpResponse";
+import { HttpRequest } from "./http/messages/HttpRequest";
+import { HttpResponse } from "./http/messages/HttpResponse";
 import { StatusCodes } from "./http/StatusCode";
 import { MissingParamError } from "./http/errors/MissingParamError";
+import { Controller } from "./protocols/controller";
 
-export class SignUpController {
+export class SignUpController implements Controller {
   public handleRequest(request: HttpRequest): HttpResponse {
     const requestBody = request.getBody();
     const missingField = this.validateRequiredFeilds(requestBody);

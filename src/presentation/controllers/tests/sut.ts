@@ -1,4 +1,4 @@
-import { HttpRequest } from "../http/HttpRequest";
+import { HttpRequest } from "../http/messages/HttpRequest";
 import { SignUpController } from "../signup";
 
 export const getSut = () => {
