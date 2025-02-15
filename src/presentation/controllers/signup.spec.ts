@@ -59,4 +59,13 @@ describe('SignUp Controller', () => {
         expect(response.getStatusCode()).toBe(400);
         expect(response.getBody()).toEqual(new InvalidParamError('email'));
     });
+
+    it('Should call EmailValidator.isValid with provided email', async () => {
+        const requestBody = request.getBody();
+
+        await sut.handleRequest(request);
+        expect(emailValidatorStub.isValid).toHaveBeenCalledWith(
+            requestBody.email,
+        );
+    });
 });
