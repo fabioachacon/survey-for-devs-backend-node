@@ -1,11 +1,8 @@
 import { inject, injectable } from 'tsyringe';
 
-import { HttpRequest } from './http/messages/HttpRequest';
-import { HttpResponse } from './http/messages/HttpResponse';
+import { Controller, EmailValidator } from './protocols';
 import { MissingParamError, InvalidParamError } from './http/errors/';
-import { Controller } from './protocols/controller';
-
-import { EmailValidator } from './protocols/email-validator';
+import { HttpRequest, HttpResponse } from './http/messages/';
 
 @injectable()
 export class SignUpController implements Controller {
