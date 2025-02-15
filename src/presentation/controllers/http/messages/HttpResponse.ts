@@ -22,9 +22,7 @@ export class HttpResponse {
     }
 
     public ok(body?: object) {
-        this.body(body);
-        this.statusCode(StatusCodes.Ok);
-        return this;
+        return this.statusCode(StatusCodes.Ok).body(body);
     }
 
     public badRequest() {

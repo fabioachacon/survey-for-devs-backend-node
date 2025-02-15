@@ -3,13 +3,19 @@ import { inject, injectable } from 'tsyringe';
 import { Controller, EmailValidator } from './protocols';
 import { MissingParamError, InvalidParamError } from './http/errors/';
 import { HttpRequest, HttpResponse } from './http/messages/';
+import { Account } from '../../domain/usecases/account';
 
 @injectable()
 export class SignUpController implements Controller {
     private readonly emailvalidator: EmailValidator;
+    private readonly account: Account;
 
-    constructor(@inject('EmailValidator') emailvalidator: EmailValidator) {
+    constructor(
+        @inject('EmailValidator') emailvalidator: EmailValidator,
+        @inject('Account') account: Account,
+    ) {
         this.emailvalidator = emailvalidator;
+        this.account = account;
     }
 
     public async handle(request: HttpRequest): Promise<HttpResponse> {
@@ -31,6 +37,12 @@ export class SignUpController implements Controller {
                     .badRequest()
                     .body(new InvalidParamError('email'));
             }
+
+            this.account.create({
+                name: requestBody.name,
+                email: requestBody.email,
+                password: requestBody.password,
+            });
         } catch (error) {
             return new HttpResponse().serverError();
         }
