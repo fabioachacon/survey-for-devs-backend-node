@@ -12,7 +12,7 @@ export class SignUpController implements Controller {
         this.emailvalidator = emailvalidator;
     }
 
-    public async handleRequest(request: HttpRequest): Promise<HttpResponse> {
+    public async handle(request: HttpRequest): Promise<HttpResponse> {
         try {
             const requestBody = request.getBody();
             const field = this.validateRequiredFeilds(requestBody);
@@ -20,6 +20,11 @@ export class SignUpController implements Controller {
                 return new HttpResponse()
                     .badRequest()
                     .body(new MissingParamError(field));
+            }
+            if (requestBody.password !== requestBody.passwordConfirmation) {
+                return new HttpResponse()
+                    .badRequest()
+                    .body(new InvalidParamError('passwordConfirmation'));
             }
             if (!this.isValidEmail(requestBody.email)) {
                 return new HttpResponse()

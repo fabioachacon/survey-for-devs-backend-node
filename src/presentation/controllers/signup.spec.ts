@@ -26,7 +26,7 @@ describe('SignUp Controller', () => {
     it('Should return 400 if no name is provided', async () => {
         Reflect.deleteProperty(request.getBody(), 'name');
 
-        const response = await sut.handleRequest(request);
+        const response = await sut.handle(request);
         expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new MissingParamError('name'));
     });
@@ -34,7 +34,7 @@ describe('SignUp Controller', () => {
     it('Should return 400 if no email is provided', async () => {
         Reflect.deleteProperty(request.getBody(), 'email');
 
-        const response = await sut.handleRequest(request);
+        const response = await sut.handle(request);
         expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new MissingParamError('email'));
     });
@@ -42,7 +42,7 @@ describe('SignUp Controller', () => {
     it('Should return 400 if no password is provided', async () => {
         Reflect.deleteProperty(request.getBody(), 'password');
 
-        const response = await sut.handleRequest(request);
+        const response = await sut.handle(request);
         expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new MissingParamError('password'));
     });
@@ -50,7 +50,7 @@ describe('SignUp Controller', () => {
     it('Should return 400 if no passwordConfirmation is provided', async () => {
         Reflect.deleteProperty(request.getBody(), 'passwordConfirmation');
 
-        const response = await sut.handleRequest(request);
+        const response = await sut.handle(request);
         expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(
             new MissingParamError('passwordConfirmation'),
@@ -60,13 +60,13 @@ describe('SignUp Controller', () => {
     it('Should return 400 if an invalid email is provided', async () => {
         emailValidatorStub.isValid.mockReturnValueOnce(false);
 
-        const response = await sut.handleRequest(request);
+        const response = await sut.handle(request);
         expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new InvalidParamError('email'));
     });
 
     it('Should call EmailValidator.isValid with provided email', async () => {
-        await sut.handleRequest(request);
+        await sut.handle(request);
         expect(emailValidatorStub.isValid).toHaveBeenCalledWith(
             request.getBody().email,
         );
@@ -77,10 +77,24 @@ describe('SignUp Controller', () => {
             throw new Error('');
         });
 
-        const response = await sut.handleRequest(request);
+        const response = await sut.handle(request);
         expect(response.getStatusCode()).toBe(
             StatusCodes.INTERNAL_SERVER_ERROR,
         );
         expect(response.getBody()).toEqual(new ServerError());
+    });
+
+    it('Should return 400 if password confirmation fails', async () => {
+        Reflect.set(
+            request.getBody(),
+            'passwordConfirmation',
+            'differentPassword',
+        );
+
+        const response = await sut.handle(request);
+        expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
+        expect(response.getBody()).toEqual(
+            new InvalidParamError('passwordConfirmation'),
+        );
     });
 });
