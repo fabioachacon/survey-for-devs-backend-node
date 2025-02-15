@@ -1,13 +1,16 @@
 import { MockProxy } from 'jest-mock-extended';
-import { InvalidParamError } from './http/errors/InvalidParamError';
-import { MissingParamError } from './http/errors/MissingParamError';
+
 import { getFakeRequestData } from './tests/data';
 import { EmailValidator } from './protocols/email-validator';
 import { mock } from 'jest-mock-extended';
 import { SignUpController } from './signup';
 import { HttpRequest } from './http/messages';
 import { StatusCodes } from './http/StatusCode';
-import { ServerError } from './http/errors/ServerError';
+import {
+    MissingParamError,
+    InvalidParamError,
+    ServerError,
+} from './http/errors/';
 
 let sut: SignUpController;
 let emailValidatorStub: MockProxy<EmailValidator>;

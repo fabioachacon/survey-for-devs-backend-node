@@ -1,12 +1,11 @@
-import 'reflect-metadata';
+import { inject, injectable } from 'tsyringe';
 
 import { HttpRequest } from './http/messages/HttpRequest';
 import { HttpResponse } from './http/messages/HttpResponse';
-import { MissingParamError } from './http/errors/MissingParamError';
+import { MissingParamError, InvalidParamError } from './http/errors/';
 import { Controller } from './protocols/controller';
-import { inject, injectable } from 'tsyringe';
+
 import { EmailValidator } from './protocols/email-validator';
-import { InvalidParamError } from './http/errors/InvalidParamError';
 
 @injectable()
 export class SignUpController implements Controller {
