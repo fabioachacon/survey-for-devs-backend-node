@@ -17,18 +17,21 @@ export class SignUpController implements Controller {
     }
 
     public async handleRequest(request: HttpRequest): Promise<HttpResponse> {
-        const requestBody = request.getBody();
-
-        const missingField = this.validateRequiredFeilds(requestBody);
-        if (missingField) {
-            return new HttpResponse()
-                .badRequest()
-                .body(new MissingParamError(missingField));
-        }
-        if (!this.isValidEmail(requestBody.email)) {
-            return new HttpResponse()
-                .badRequest()
-                .body(new InvalidParamError('email'));
+        try {
+            const requestBody = request.getBody();
+            const field = this.validateRequiredFeilds(requestBody);
+            if (field) {
+                return new HttpResponse()
+                    .badRequest()
+                    .body(new MissingParamError(field));
+            }
+            if (!this.isValidEmail(requestBody.email)) {
+                return new HttpResponse()
+                    .badRequest()
+                    .body(new InvalidParamError('email'));
+            }
+        } catch (error) {
+            return new HttpResponse().serverError();
         }
     }
 

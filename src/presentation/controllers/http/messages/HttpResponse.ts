@@ -1,3 +1,4 @@
+import { ServerError } from '../errors/ServerError';
 import { StatusCodes } from '../StatusCode';
 
 export class HttpResponse {
@@ -28,6 +29,12 @@ export class HttpResponse {
 
     public badRequest() {
         return this.statusCode(StatusCodes.BAD_REQUEST);
+    }
+
+    public serverError() {
+        return this.statusCode(StatusCodes.INTERNAL_SERVER_ERROR).body(
+            new ServerError(),
+        );
     }
 
     public getBody() {

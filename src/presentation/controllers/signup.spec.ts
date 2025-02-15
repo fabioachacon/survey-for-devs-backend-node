@@ -6,6 +6,8 @@ import { EmailValidator } from './protocols/email-validator';
 import { mock } from 'jest-mock-extended';
 import { SignUpController } from './signup';
 import { HttpRequest } from './http/messages';
+import { StatusCodes } from './http/StatusCode';
+import { ServerError } from './http/errors/ServerError';
 
 let sut: SignUpController;
 let emailValidatorStub: MockProxy<EmailValidator>;
@@ -22,7 +24,7 @@ describe('SignUp Controller', () => {
         Reflect.deleteProperty(request.getBody(), 'name');
 
         const response = await sut.handleRequest(request);
-        expect(response.getStatusCode()).toBe(400);
+        expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new MissingParamError('name'));
     });
 
@@ -30,7 +32,7 @@ describe('SignUp Controller', () => {
         Reflect.deleteProperty(request.getBody(), 'email');
 
         const response = await sut.handleRequest(request);
-        expect(response.getStatusCode()).toBe(400);
+        expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new MissingParamError('email'));
     });
 
@@ -38,7 +40,7 @@ describe('SignUp Controller', () => {
         Reflect.deleteProperty(request.getBody(), 'password');
 
         const response = await sut.handleRequest(request);
-        expect(response.getStatusCode()).toBe(400);
+        expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new MissingParamError('password'));
     });
 
@@ -46,7 +48,7 @@ describe('SignUp Controller', () => {
         Reflect.deleteProperty(request.getBody(), 'passwordConfirmation');
 
         const response = await sut.handleRequest(request);
-        expect(response.getStatusCode()).toBe(400);
+        expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(
             new MissingParamError('passwordConfirmation'),
         );
@@ -56,16 +58,26 @@ describe('SignUp Controller', () => {
         emailValidatorStub.isValid.mockReturnValueOnce(false);
 
         const response = await sut.handleRequest(request);
-        expect(response.getStatusCode()).toBe(400);
+        expect(response.getStatusCode()).toBe(StatusCodes.BAD_REQUEST);
         expect(response.getBody()).toEqual(new InvalidParamError('email'));
     });
 
     it('Should call EmailValidator.isValid with provided email', async () => {
-        const requestBody = request.getBody();
-
         await sut.handleRequest(request);
         expect(emailValidatorStub.isValid).toHaveBeenCalledWith(
-            requestBody.email,
+            request.getBody().email,
         );
+    });
+
+    it('Should return 500 if EmailValidator throws an exception', async () => {
+        emailValidatorStub.isValid.mockImplementationOnce((email: string) => {
+            throw new Error('');
+        });
+
+        const response = await sut.handleRequest(request);
+        expect(response.getStatusCode()).toBe(
+            StatusCodes.INTERNAL_SERVER_ERROR,
+        );
+        expect(response.getBody()).toEqual(new ServerError());
     });
 });
