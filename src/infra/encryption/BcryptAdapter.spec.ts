@@ -17,15 +17,21 @@ describe('BCryptAdapter', () => {
 
     it('should call bcrypt with correct value', async () => {
         const hashSpy = jest.spyOn(bcrypt, 'hash');
-
         await sut.encrypt('dehashed_value');
-
         expect(hashSpy).toHaveBeenCalledWith('dehashed_value', SALT);
     });
 
     it('should return a hashed string on success', async () => {
         const hashed = await sut.encrypt('dehashed');
-
         expect(hashed).toBe('hashed_value');
+    });
+
+    it('should throw if bcrypt throws', async () => {
+        jest.spyOn(bcrypt, 'hash').mockImplementationOnce(async () => {
+            throw new Error();
+        });
+
+        const promise = sut.encrypt('any_value');
+        expect(promise).rejects.toThrow();
     });
 });
