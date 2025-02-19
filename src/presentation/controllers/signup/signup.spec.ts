@@ -1,20 +1,20 @@
 import { MockProxy } from 'jest-mock-extended';
 
-import { getFakeRequestData } from './tests/data';
-import { EmailValidator } from './protocols/email-validator';
-import { Account } from '../../domain/usecases/account';
+import { getFakeRequestData } from '../tests/data';
+import { EmailValidator } from '../protocols/email-validator';
+import { AccountManager } from '../../../domain/usecases/account';
 import { mock } from 'jest-mock-extended';
 import { SignUpController } from './signup';
-import { HttpRequest } from './http/messages';
-import { StatusCodes } from './http/StatusCode';
+import { HttpRequest } from '../http/messages';
+import { StatusCodes } from '../http/StatusCode';
 import {
     MissingParamError,
     InvalidParamError,
     ServerError,
-} from './http/errors/';
+} from '../http/errors';
 
 let sut: SignUpController;
-let accountStub: MockProxy<Account>;
+let accountStub: MockProxy<AccountManager>;
 let emailValidatorStub: MockProxy<EmailValidator>;
 let request: HttpRequest;
 
@@ -22,7 +22,7 @@ describe('SignUp Controller', () => {
     beforeEach(() => {
         request = getFakeRequestData();
 
-        accountStub = mock<Account>();
+        accountStub = mock<AccountManager>();
         emailValidatorStub = mock<EmailValidator>();
         sut = new SignUpController(emailValidatorStub, accountStub);
     });
@@ -77,7 +77,7 @@ describe('SignUp Controller', () => {
     });
 
     it('Should return 500 if EmailValidator throws an exception', async () => {
-        emailValidatorStub.isValid.mockImplementationOnce((email: string) => {
+        emailValidatorStub.isValid.mockImplementationOnce(() => {
             throw new Error('');
         });
 
@@ -102,7 +102,7 @@ describe('SignUp Controller', () => {
         );
     });
 
-    it('Should call AddAccount with correct values', async () => {
+    it('Should call AccountMananger.create with correct values', async () => {
         emailValidatorStub.isValid.mockImplementationOnce((email: string) => {
             throw new Error('');
         });
@@ -114,16 +114,38 @@ describe('SignUp Controller', () => {
         expect(response.getBody()).toEqual(new ServerError());
     });
 
-    it('Should call Account.create with correct values', async () => {
-        const body = request.getBody();
+    it('Should call AccountMananger.create with correct values', async () => {
         emailValidatorStub.isValid.mockReturnValueOnce(true);
 
         await sut.handle(request);
 
+        const { name, email, password } = request.getBody();
         expect(accountStub.create).toHaveBeenCalledWith({
-            name: body.name,
-            email: body.email,
-            password: body.password,
+            name: name,
+            email: email,
+            password: password,
+        });
+    });
+
+    it('Should return 200 if valid data is provided', async () => {
+        const { name, email, password } = request.getBody();
+
+        emailValidatorStub.isValid.mockReturnValueOnce(true);
+        accountStub.create.mockResolvedValueOnce({
+            id: 'uuid',
+            name: name,
+            email: email,
+            password: password,
+        });
+
+        const response = await sut.handle(request);
+
+        expect(response.getStatusCode()).toBe(200);
+        expect(response.getBody()).toEqual({
+            id: 'uuid',
+            name: name,
+            email: email,
+            password: password,
         });
     });
 });

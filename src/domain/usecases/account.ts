@@ -1,5 +1,6 @@
-import { AccountEntity, AccountModel } from '../models/indext';
+import { AccountEntity } from '../entity';
+import { AccountModel } from '../models/indext';
 
-export interface Account {
-    create(accountData: AccountModel): AccountEntity;
+export interface AccountManager {
+    create(accountData: AccountModel): Promise<AccountEntity>;
 }

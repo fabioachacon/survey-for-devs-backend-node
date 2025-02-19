@@ -27,10 +27,12 @@
     "prettier": "^2.8.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "@types/validator": "^13.12.2"
   },
   "dependencies": {
     "reflect-metadata": "^0.2.2",
-    "tsyringe": "^4.8.0"
+    "tsyringe": "^4.8.0",
+    "validator": "^13.12.0"
   }
 }

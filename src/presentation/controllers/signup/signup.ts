@@ -1,18 +1,18 @@
 import { inject, injectable } from 'tsyringe';
 
-import { Controller, EmailValidator } from './protocols';
-import { MissingParamError, InvalidParamError } from './http/errors/';
-import { HttpRequest, HttpResponse } from './http/messages/';
-import { Account } from '../../domain/usecases/account';
+import { Controller, EmailValidator } from '../protocols';
+import { MissingParamError, InvalidParamError } from '../http/errors';
+import { HttpRequest, HttpResponse } from '../http/messages';
+import { AccountManager } from '../../../domain/usecases/account';
 
 @injectable()
 export class SignUpController implements Controller {
     private readonly emailvalidator: EmailValidator;
-    private readonly account: Account;
+    private readonly account: AccountManager;
 
     constructor(
         @inject('EmailValidator') emailvalidator: EmailValidator,
-        @inject('Account') account: Account,
+        @inject('Account') account: AccountManager,
     ) {
         this.emailvalidator = emailvalidator;
         this.account = account;
@@ -38,11 +38,15 @@ export class SignUpController implements Controller {
                     .body(new InvalidParamError('email'));
             }
 
-            this.account.create({
+            const account = await this.account.create({
                 name: requestBody.name,
                 email: requestBody.email,
                 password: requestBody.password,
             });
+
+            if (account) {
+                return new HttpResponse().ok(account);
+            }
         } catch (error) {
             return new HttpResponse().serverError();
         }
