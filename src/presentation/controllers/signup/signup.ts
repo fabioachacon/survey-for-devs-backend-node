@@ -1,21 +1,15 @@
-import { inject, injectable } from 'tsyringe';
-
 import { Controller, EmailValidator } from '../protocols';
 import { MissingParamError, InvalidParamError } from '../http/errors';
 import { HttpRequest, HttpResponse } from '../http/messages';
 import { AccountManager } from '../../../domain/usecases/account';
 
-@injectable()
 export class SignUpController implements Controller {
-    private readonly emailvalidator: EmailValidator;
     private readonly account: AccountManager;
+    private readonly emailvalidator: EmailValidator;
 
-    constructor(
-        @inject('EmailValidator') emailvalidator: EmailValidator,
-        @inject('Account') account: AccountManager,
-    ) {
-        this.emailvalidator = emailvalidator;
+    constructor(account: AccountManager, emailvalidator: EmailValidator) {
         this.account = account;
+        this.emailvalidator = emailvalidator;
     }
 
     public async handle(request: HttpRequest): Promise<HttpResponse> {

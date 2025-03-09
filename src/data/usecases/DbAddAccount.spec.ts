@@ -1,24 +1,23 @@
 import { mock, MockProxy } from 'jest-mock-extended';
-import { AddAccountRepository, Encrypter } from '../protocols';
+import { AccountRepository, Encrypter } from '../protocols';
 import { DbAddAccount } from './DbAddAccount';
 import { fakeAccount } from './tests/fake';
 import { AccountModel } from '../../domain/models/indext';
 
 let sut: DbAddAccount;
 let encrypterStub: MockProxy<Encrypter>;
-let addAccountRepositoryStub: MockProxy<AddAccountRepository>;
+let addAccountRepositoryStub: MockProxy<AccountRepository>;
 
 describe('DbAddAccountUsecase', () => {
     beforeEach(() => {
         encrypterStub = mock<Encrypter>();
-        addAccountRepositoryStub = mock<AddAccountRepository>();
+        addAccountRepositoryStub = mock<AccountRepository>();
 
         sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub);
     });
 
     it('should call Encryper with correct password', async () => {
         await sut.create(fakeAccount);
-
         expect(encrypterStub.encrypt).toHaveBeenCalledWith('password');
     });
 

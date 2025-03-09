@@ -24,7 +24,7 @@ describe('SignUp Controller', () => {
 
         accountStub = mock<AccountManager>();
         emailValidatorStub = mock<EmailValidator>();
-        sut = new SignUpController(emailValidatorStub, accountStub);
+        sut = new SignUpController(accountStub, emailValidatorStub);
     });
 
     it('Should return 400 if no name is provided', async () => {

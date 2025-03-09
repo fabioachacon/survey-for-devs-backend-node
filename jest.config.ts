@@ -18,6 +18,7 @@ const config: Config = {
     // Automatically clear mock calls, instances, contexts and results before every test
     clearMocks: true,
     setupFiles: ['reflect-metadata'],
+    preset: '@shelf/jest-mongodb',
 
     // Indicates whether the coverage information should be collected while executing the test
     collectCoverage: true,

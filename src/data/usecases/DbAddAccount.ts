@@ -1,21 +1,15 @@
-import { inject, injectable } from 'tsyringe';
-import { AddAccountRepository, Encrypter } from '../protocols';
+import { AccountRepository, Encrypter } from '../protocols';
 import { AccountManager } from '../../domain/usecases/account';
 import { AccountEntity } from '../../domain/entity';
 import { AccountModel } from '../../domain/models/indext';
 
-@injectable()
 export class DbAddAccount implements AccountManager {
     private readonly encryper: Encrypter;
-    private readonly addAccountRespository: AddAccountRepository;
+    private readonly accountRespository: AccountRepository;
 
-    constructor(
-        @inject('Encrypter') encrypter: Encrypter,
-        @inject('AddAccountRepository')
-        addAccountRespository: AddAccountRepository,
-    ) {
+    constructor(encrypter: Encrypter, accountRespository: AccountRepository) {
         this.encryper = encrypter;
-        this.addAccountRespository = addAccountRespository;
+        this.accountRespository = accountRespository;
     }
 
     public async create(
@@ -27,7 +21,7 @@ export class DbAddAccount implements AccountManager {
 
         Reflect.set(accountData, 'password', encryptedPassword);
 
-        const account = await this.addAccountRespository.create(accountData);
+        const account = await this.accountRespository.create(accountData);
 
         return account;
     }

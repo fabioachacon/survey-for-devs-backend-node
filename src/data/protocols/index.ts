@@ -5,6 +5,6 @@ export interface Encrypter {
     encrypt(value: string): Promise<string>;
 }
 
-export interface AddAccountRepository {
+export interface AccountRepository {
     create(accountData: AccountModel): Promise<AccountEntity>;
 }
