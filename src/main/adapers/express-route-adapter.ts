@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Controller } from '../../presentation/controllers/protocols';
-import { HttpRequest } from '../../presentation/controllers/http/messages';
+import { HttpRequest } from '../../presentation/helpers/http/messages';
+import { StatusCodes } from '../../presentation/helpers/http/StatusCode';
 
 export const controllerAdapter = (controller: Controller) => {
     return async function (req: Request, res: Response) {
@@ -11,6 +12,13 @@ export const controllerAdapter = (controller: Controller) => {
 
         const httpResponse = await controller.handle(httpRequest);
 
-        res.status(httpResponse.getStatusCode()).json(httpResponse.getBody());
+        const statusCode = httpResponse.getStatusCode();
+        if (statusCode === StatusCodes.Ok) {
+            res.status(statusCode).json(httpResponse.getBody());
+        } else {
+            res.status(statusCode).json({
+                error: httpResponse.getBody()?.message,
+            });
+        }
     };
 };

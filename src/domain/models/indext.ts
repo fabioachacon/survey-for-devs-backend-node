@@ -3,3 +3,8 @@ export type AccountModel = {
     email: string;
     password: string;
 };
+
+export type CredentialsModel = {
+    email: string;
+    password: string;
+};

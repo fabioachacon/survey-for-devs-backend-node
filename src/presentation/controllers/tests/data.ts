@@ -1,4 +1,4 @@
-import { HttpRequest } from '../http/messages/HttpRequest';
+import { HttpRequest } from '../../helpers/http/messages/HttpRequest';
 
 export const getFakeRequestData = () => {
     return new HttpRequest().body({

@@ -7,10 +7,11 @@ jest.mock('bcrypt', () => ({
     },
 }));
 
-const SALT = 12;
-let sut: BcryptAdapter;
-
 describe('BCryptAdapter', () => {
+    const SALT = 12;
+
+    let sut: BcryptAdapter;
+
     beforeEach(() => {
         sut = new BcryptAdapter(SALT);
     });
