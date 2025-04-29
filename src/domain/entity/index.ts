@@ -1,6 +1,4 @@
-export type AccountEntity = {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-};
+import { AccountEntity } from './AccountEntity';
+import { AccessTokenEntity } from './AccessTokenEntity';
+
+export { AccessTokenEntity, AccountEntity };

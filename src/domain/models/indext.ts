@@ -1,10 +1,4 @@
-export type AccountModel = {
-    name: string;
-    email: string;
-    password: string;
-};
+import { AccountModel } from './AccountModel';
+import { AuthenticationModel } from './AuthenticationModel';
 
-export type CredentialsModel = {
-    email: string;
-    password: string;
-};
+export { AccountModel, AuthenticationModel };

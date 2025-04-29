@@ -12,8 +12,8 @@ export class HttpRequest<B = Record<string, any>, H = Record<string, any>> {
         return this;
     }
 
-    public getBody() {
-        return this.#body;
+    public getBody<T extends B>() {
+        return this.#body as T;
     }
 
     public getHeaders() {

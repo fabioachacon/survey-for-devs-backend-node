@@ -22,12 +22,16 @@ export class HttpResponse {
         return this;
     }
 
-    public ok(body?: object) {
+    public ok(body?: object | null) {
         return this.statusCode(StatusCodes.Ok).body(body);
     }
 
     public badRequest() {
         return this.statusCode(StatusCodes.BadRequest);
+    }
+
+    public noContent() {
+        return this.statusCode(StatusCodes.noContent).body(null);
     }
 
     public serverError(error: Error) {
@@ -40,6 +44,10 @@ export class HttpResponse {
         return this.statusCode(StatusCodes.Unauthorized).body(
             new UnauthorizedError(),
         );
+    }
+
+    public forbidden() {
+        return this.statusCode(StatusCodes.Forbidden);
     }
 
     public getBody() {

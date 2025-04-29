@@ -1,4 +1,4 @@
-import { MongoUtils } from '../infra/db/mongodb/helpers/connection';
+import { MongoUtils } from '../infra/db/mongodb/helpers/mongo-utils';
 
 import env from './config/env';
 

@@ -2,11 +2,11 @@ import { mock, MockProxy } from 'jest-mock-extended';
 
 import { DbAuthentication } from './db-authentication';
 import {
-    LoadAccountRespository,
-    UpdateAccessTokenRepository,
+    AccountRepository,
+    AccessTokenRepository,
 } from '../../protocols/repositories';
 import { HashComparer } from '../../protocols/encryption/hash-comparer';
-import { TokenGenerator } from '../../protocols/encryption/token-generator';
+import { Encrypter } from '../../protocols/encryption/encrypter';
 
 describe('DbAuthentication', () => {
     const fakeEntity = {
@@ -14,45 +14,46 @@ describe('DbAuthentication', () => {
         email: 'test@mail.com',
         name: 'Jon Doe',
         password: 'hashed_password',
+        accessTokenId: 'b1234',
     };
 
-    let loadAccountRepositoryStub: MockProxy<LoadAccountRespository>;
+    let accountRepositoryStub: MockProxy<AccountRepository>;
 
     let hashComparerStub: MockProxy<HashComparer>;
 
-    let tokenGeneratorStub: MockProxy<TokenGenerator>;
+    let encrypterStub: MockProxy<Encrypter>;
 
-    let updateAccessTokenRepositoryStub: MockProxy<UpdateAccessTokenRepository>;
+    let accessTokenRepositoryStub: MockProxy<AccessTokenRepository>;
 
     let sut: DbAuthentication;
 
     beforeEach(() => {
-        loadAccountRepositoryStub = mock<LoadAccountRespository>();
+        accountRepositoryStub = mock<AccountRepository>();
+
+        accessTokenRepositoryStub = mock<AccessTokenRepository>();
 
         hashComparerStub = mock<HashComparer>();
 
-        tokenGeneratorStub = mock<TokenGenerator>();
-
-        updateAccessTokenRepositoryStub = mock<UpdateAccessTokenRepository>();
+        encrypterStub = mock<Encrypter>();
 
         sut = new DbAuthentication(
-            loadAccountRepositoryStub,
+            accountRepositoryStub,
+            accessTokenRepositoryStub,
+            encrypterStub,
             hashComparerStub,
-            tokenGeneratorStub,
-            updateAccessTokenRepositoryStub,
         );
     });
 
     it('should call LoadAccountRepository.byEmail with correct email', async () => {
         await sut.auth({ email: 'test@email.com', password: '123' });
 
-        expect(loadAccountRepositoryStub.byEmail).toHaveBeenCalledWith(
+        expect(accountRepositoryStub.findByEmail).toHaveBeenCalledWith(
             'test@email.com',
         );
     });
 
     it('should throw if LoadAccountRepository.byEmail throws', async () => {
-        loadAccountRepositoryStub.byEmail.mockImplementationOnce(() => {
+        accountRepositoryStub.findByEmail.mockImplementationOnce(() => {
             throw new Error('db_error');
         });
 
@@ -62,7 +63,7 @@ describe('DbAuthentication', () => {
     });
 
     it('should return null if LoadAccountRepository.byEmail returns null', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(null);
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(null);
 
         const token = await sut.auth({
             email: 'test@email.com',
@@ -73,7 +74,7 @@ describe('DbAuthentication', () => {
     });
 
     it('should call HashComparer.compare with correct values', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
 
         await sut.auth({
             email: 'test@email.com',
@@ -87,7 +88,7 @@ describe('DbAuthentication', () => {
     });
 
     it('should throw if HashComparer.compare throws', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockImplementationOnce(() => {
             throw new Error('compare_error');
         });
@@ -98,7 +99,7 @@ describe('DbAuthentication', () => {
     });
 
     it('should return null HashComparer.compare returns false', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockResolvedValueOnce(false);
 
         const token = await sut.auth({
@@ -109,8 +110,8 @@ describe('DbAuthentication', () => {
         expect(token).toBeNull();
     });
 
-    it('should call TokenGenerator.generate with user id', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+    it('should call Encrypter.generate with user id', async () => {
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockResolvedValueOnce(true);
 
         await sut.auth({
@@ -118,14 +119,14 @@ describe('DbAuthentication', () => {
             password: '123',
         });
 
-        expect(tokenGeneratorStub.generate).toHaveBeenCalledWith(fakeEntity.id);
+        expect(encrypterStub.encrypt).toHaveBeenCalledWith(fakeEntity.id);
     });
 
-    it('should throw if TokenGenerator.generate throws', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+    it('should throw if Encrypter.generate throws', async () => {
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockResolvedValueOnce(true);
 
-        tokenGeneratorStub.generate.mockImplementationOnce(() => {
+        encrypterStub.encrypt.mockImplementationOnce(() => {
             throw new Error('generation_error');
         });
 
@@ -134,10 +135,10 @@ describe('DbAuthentication', () => {
         expect(promise).rejects.toThrow();
     });
 
-    it('should return a token if TokenGenerator.generate succeeds', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+    it('should return a token if Encrypter.encrypt succeeds', async () => {
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockResolvedValueOnce(true);
-        tokenGeneratorStub.generate.mockResolvedValueOnce('generated_token');
+        encrypterStub.encrypt.mockResolvedValueOnce('generated_token');
 
         const token = await sut.auth({
             email: 'test@email.com',
@@ -148,27 +149,27 @@ describe('DbAuthentication', () => {
     });
 
     it('should call UpdateTokenRepository with correct values', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockResolvedValueOnce(true);
-        tokenGeneratorStub.generate.mockResolvedValueOnce('generated_token');
+        encrypterStub.encrypt.mockResolvedValueOnce('generated_token');
 
         const token = await sut.auth({
             email: 'test@email.com',
             password: '123',
         });
 
-        expect(updateAccessTokenRepositoryStub.update).toHaveBeenCalledWith(
+        expect(accessTokenRepositoryStub.update).toHaveBeenCalledWith(
             fakeEntity.id,
             token,
         );
     });
 
     it('should throw UpdateTokenRepository.update throws', async () => {
-        loadAccountRepositoryStub.byEmail.mockResolvedValueOnce(fakeEntity);
+        accountRepositoryStub.findByEmail.mockResolvedValueOnce(fakeEntity);
         hashComparerStub.compare.mockResolvedValueOnce(true);
-        tokenGeneratorStub.generate.mockResolvedValueOnce('generated_token');
+        encrypterStub.encrypt.mockResolvedValueOnce('generated_token');
 
-        updateAccessTokenRepositoryStub.update.mockImplementationOnce(() => {
+        accessTokenRepositoryStub.update.mockImplementationOnce(() => {
             throw new Error('db_error');
         });
 

@@ -1,47 +1,47 @@
-import { CredentialsModel } from '../../../domain/models/indext';
+import { AuthenticationModel } from '../../../domain/models/indext';
 import { Authentication } from '../../../domain/usecases/authentication';
 import { HashComparer } from '../../protocols/encryption/hash-comparer';
-import { TokenGenerator } from '../../protocols/encryption/token-generator';
+import { Encrypter } from '../../protocols/encryption/encrypter';
 import {
-    LoadAccountRespository,
-    UpdateAccessTokenRepository,
+    AccountRepository,
+    AccessTokenRepository,
 } from '../../protocols/repositories';
 
 export class DbAuthentication implements Authentication {
-    private readonly loadAccountRespository: LoadAccountRespository;
+    private readonly accountRespository: AccountRepository;
+    private readonly accessTokenRepository: AccessTokenRepository;
+    private readonly encrypter: Encrypter;
     private readonly hashComparer: HashComparer;
-    private readonly tokenGenerator: TokenGenerator;
-    private readonly updateAccessTokenRepository: UpdateAccessTokenRepository;
 
     constructor(
-        loadAccountRespository: LoadAccountRespository,
+        accountRespository: AccountRepository,
+        accessTokenRepository: AccessTokenRepository,
+        Encrypter: Encrypter,
         hashComparer: HashComparer,
-        tokenGenerator: TokenGenerator,
-        updateAccessTokenRepository: UpdateAccessTokenRepository,
     ) {
-        this.loadAccountRespository = loadAccountRespository;
+        this.accountRespository = accountRespository;
+        this.accessTokenRepository = accessTokenRepository;
+        this.encrypter = Encrypter;
         this.hashComparer = hashComparer;
-        this.tokenGenerator = tokenGenerator;
-        this.updateAccessTokenRepository = updateAccessTokenRepository;
     }
 
-    public async auth(credentials: CredentialsModel): Promise<string> {
-        const account = await this.loadAccountRespository.byEmail(
+    public async auth(credentials: AuthenticationModel): Promise<string> {
+        const userAccount = await this.accountRespository.findByEmail(
             credentials.email,
         );
 
-        if (!account) return null;
+        if (!userAccount) return null;
 
-        const mached = await this.hashComparer.compare(
+        const matched = await this.hashComparer.compare(
             credentials.password,
-            account.password,
+            userAccount.password,
         );
 
-        if (mached === false) return null;
+        if (matched === false) return null;
 
-        const token = await this.tokenGenerator.generate(account.id);
+        const token = await this.encrypter.encrypt(userAccount.id);
 
-        await this.updateAccessTokenRepository.update(account.id, token);
+        await this.accessTokenRepository.update(userAccount.id, token);
 
         return token;
     }

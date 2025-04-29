@@ -1,12 +1,13 @@
 import { Collection, Document } from 'mongodb';
-import { MongoUtils } from '../helpers/connection';
+import { MongoUtils } from '../helpers/mongo-utils';
 import { MongoErrorLogRepository } from './LogErrorRepository';
+import env from '../../../../main/config/env';
 
 describe('LogMongoRepository', () => {
     let errorCollection: Collection<Document>;
 
     beforeAll(async () => {
-        await MongoUtils.connect('mongodb://localhost:4444/mongo-db');
+        await MongoUtils.connect(env.mongUrl);
     });
 
     afterAll(async () => {

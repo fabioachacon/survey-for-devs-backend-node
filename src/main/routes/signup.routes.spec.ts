@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../config/app';
 
-describe('Signup Routes', () => {
+describe('POST /signup', () => {
     it('should return an account on status 200', async () => {
         app.post('/signup', (req, res) => {
             res.send('');
@@ -10,8 +10,8 @@ describe('Signup Routes', () => {
         await request(app)
             .post('/signup')
             .send({
-                name: 'Fábio',
-                email: 'fabio.costa@consistem.com.br',
+                name: 'Jon',
+                email: 'hello@email.com',
                 password: 'any',
                 passwordConfirmation: 'any',
             })
