@@ -1,10 +1,10 @@
 import { Collection, Document } from 'mongodb';
-import env from '../../../../main/config/env';
+import env from '../../../../../main/config/env';
 
 import { MongoAccountRepository } from './MongoAccountRepository';
-import { MongoUtils } from '../helpers/mongo-utils';
-import { AccessTokenRepository } from '../../../../data/protocols/repositories';
-import { MongoAccessTokenRepository } from './MongoAccessTokenRepository';
+import { MongoUtils } from '../../helpers/mongo-utils';
+import { AccessTokenRepository } from '../../../../../data/protocols/repositories';
+import { MongoAccessTokenRepository } from '../token/MongoAccessTokenRepository';
 
 describe('MongoAccountRepository', () => {
     let accountCollection: Collection<Document>;

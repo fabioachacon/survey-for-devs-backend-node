@@ -21,14 +21,12 @@ export class SurveyController implements Controller {
                 return new HttpResponse().badRequest().body(error);
             }
 
-            const survey = await this.surveyManager.create({
+            await this.surveyManager.create({
                 question: body.question,
                 answers: body.answers,
             });
 
-            if (!survey) {
-                return new HttpResponse().noContent();
-            }
+            return new HttpResponse().noContent();
         } catch (error) {
             return new HttpResponse().serverError(error);
         }

@@ -11,9 +11,7 @@ export class DbSurvey implements SurveyManager {
         this.surveyRepository = surveyRepository;
     }
 
-    public async create(data: SurveyModel): Promise<SurveyEntity | null> {
-        const survey = await this.surveyRepository.create(data);
-
-        return survey;
+    public async create(data: SurveyModel) {
+        await this.surveyRepository.create(data);
     }
 }

@@ -21,5 +21,5 @@ export interface LogErrorRepository {
 }
 
 export interface SurveyRepository {
-    create(data: SurveyModel): Promise<SurveyEntity | null>;
+    create(data: SurveyModel): Promise<void>;
 }

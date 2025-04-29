@@ -1,11 +1,11 @@
-import { AccessTokenEntity, AccountEntity } from '../../../../domain/entity';
-import { AccountModel } from '../../../../domain/models/indext';
+import { AccountEntity } from '../../../../../domain/entity';
+import { AccountModel } from '../../../../../domain/models/indext';
 
-import { MongoUtils } from '../helpers/mongo-utils';
+import { MongoUtils } from '../../helpers/mongo-utils';
 import {
     AccessTokenRepository,
     AccountRepository,
-} from '../../../../data/protocols/repositories';
+} from '../../../../../data/protocols/repositories';
 
 export class MongoAccountRepository implements AccountRepository {
     private readonly accessTokenRepository: AccessTokenRepository;

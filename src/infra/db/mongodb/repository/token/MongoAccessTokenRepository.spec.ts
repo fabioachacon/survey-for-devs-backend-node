@@ -1,7 +1,8 @@
 import { Collection, Document } from 'mongodb';
 import { MongoAccessTokenRepository } from './MongoAccessTokenRepository';
-import { MongoUtils } from '../helpers/mongo-utils';
-import env from '../../../../main/config/env';
+
+import env from '../../../../../main/config/env';
+import { MongoUtils } from '../../helpers/mongo-utils';
 
 describe('MongoAccessTokenRepository', () => {
     let accessTokenCollection: Collection<Document>;

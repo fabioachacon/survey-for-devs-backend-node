@@ -1,6 +1,6 @@
-import { AccessTokenRepository } from '../../../../data/protocols/repositories';
-import { AccessTokenEntity } from '../../../../domain/entity';
-import { MongoUtils } from '../helpers/mongo-utils';
+import { AccessTokenRepository } from '../../../../../data/protocols/repositories';
+import { AccessTokenEntity } from '../../../../../domain/entity';
+import { MongoUtils } from '../../helpers/mongo-utils';
 
 export class MongoAccessTokenRepository implements AccessTokenRepository {
     public async update<T>(filter: Partial<T>, token: string) {

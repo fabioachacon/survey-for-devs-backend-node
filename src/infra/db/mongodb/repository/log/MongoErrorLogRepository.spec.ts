@@ -1,7 +1,8 @@
+import env from '../../../../../main/config/env';
 import { Collection, Document } from 'mongodb';
-import { MongoUtils } from '../helpers/mongo-utils';
-import { MongoErrorLogRepository } from './LogErrorRepository';
-import env from '../../../../main/config/env';
+import { MongoUtils } from '../../helpers/mongo-utils';
+
+import { MongoErrorLogRepository } from './MongoErrorLogRepository';
 
 describe('LogMongoRepository', () => {
     let errorCollection: Collection<Document>;
