@@ -13,7 +13,7 @@ export const controllerAdapter = (controller: Controller) => {
         const httpResponse = await controller.handle(httpRequest);
 
         const statusCode = httpResponse.getStatusCode();
-        if (statusCode === StatusCodes.Ok) {
+        if (statusCode === StatusCodes.Ok || statusCode <= 299) {
             res.status(statusCode).json(httpResponse.getBody());
         } else {
             res.status(statusCode).json({

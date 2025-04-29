@@ -75,8 +75,6 @@ describe('SurveyController', () => {
     });
 
     it('should return 200 on success', async () => {
-        surveyManagerStub.create.mockResolvedValueOnce(null);
-
         const response = await sut.handle(httpRequest);
 
         expect(response.properties).toEqual(

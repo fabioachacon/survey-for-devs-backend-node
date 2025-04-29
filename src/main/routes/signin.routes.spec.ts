@@ -39,7 +39,7 @@ describe('POST /signin', () => {
             .expect(200);
     });
 
-    it('should return 401 on unathorized', async () => {
+    it('should return 401 on unauthorized', async () => {
         await request(app)
             .post('/api/signin')
             .send({
